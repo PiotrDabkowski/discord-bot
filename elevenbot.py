@@ -1,13 +1,13 @@
-import hikari, lightbulb, requests, time, random, json as j, os
+import hikari, lightbulb, requests, random, os
 
-bot = lightbulb.BotApp("") #<- replace with token here
+bot = lightbulb.BotApp("") #token goes here
 
 @bot.listen(hikari.StartedEvent)
 async def on_ready(event):
-    print("Ready!")  
+    print("Ready!")
 
 @bot.command
-@lightbulb.option("voice", "The voice to use using the default API key. To use your custom voices, use the '/custom-synthesize' command.", required=True, choices=["Adam", "Antoni", "Arnold", "Bella", "Josh", "Rachel", "Domi", "Elli", "Sam"])
+@lightbulb.option("voice", "The voice to use. To use your custom voices, use the '/custom-synthesize' command.", required=True, choices=["Adam", "Antoni", "Arnold", "Bella", "Josh", "Rachel", "Domi", "Elli", "Sam"])
 @lightbulb.option("text", "Text to use the TTS. Max is 1000.", required=True)
 @lightbulb.command("synthesize", "Main synthesize command.")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -32,7 +32,7 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         site = "https://api.elevenlabs.io/v1/text-to-speech/yoZ06aMxZJJ28mfd3POQ"
     headers = {
     'accept': 'audio/mpeg',
-    'xi-api-key': #to devs, add your api key here,
+    'xi-api-key': #to devs, message me the unlimited quota API key so i can add it here,
     'Content-Type': 'application/json'
     }
     if len(ctx.options.text) > 1000:
@@ -49,8 +49,25 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         return
 
 @bot.command
+@lightbulb.command("about", "Details about the bot.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def aboutcmd(ctx: lightbulb.context.Context):
+    randcolor = "#" + ''.join([random.choice('ABCDEF0123456789') for i in range(6)])
+    embed = hikari.Embed(
+        title="About",
+        description="About this bot.",
+        color=randcolor
+    ).add_field(
+        "About the bot.",
+        "This bot is an unofficial bot for ElevenLabs, an AI TTS website where you can make your own voices.\n\nThere are 2 modes for this bot: 'synthesize', and 'custom-synthesize'.\n\n1. The default command, 'synthesize', will let you use **only** the default voices for no cost of your quota.\n2. The 'custom-synthesize' command will let you use your own custom voices, but with a cost of your quota."
+    ).set_footer(
+        "This bot was made by @HawtCawfee☕#1337 in collaboration with ElevenLabs. If any issues arise, please contact @HawtCawfee☕#1337 first before contacting ElevenLabs."
+    ).set_thumbnail("https://i.ibb.co/Gn6C0s5/1668126895443.jpg")
+    await ctx.respond(embed)
+
+@bot.command
 @lightbulb.option("voice_id", "Use your custom voices using your own API key.", required=True)
-@lightbulb.option("apikey", "Enter your own API key here. Only use this command if you want to synthesize using your custom voices.", required=True)
+@lightbulb.option("apikey", "Enter your own API key here for using your custom voices.", required=True)
 @lightbulb.option("text", "The text to synthesize. Max 1000 characters", required=True)
 @lightbulb.command("custom-synthesize", "Use your own API key to synthesize your custom voices.")
 @lightbulb.implements(lightbulb.SlashCommand)
