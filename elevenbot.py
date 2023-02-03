@@ -1,12 +1,12 @@
 import hikari, lightbulb, requests, time, random, json as j, os
 
-bot = lightbulb.BotApp("")
+bot = lightbulb.BotApp("") #<- replace with token here
 
 @bot.listen(hikari.StartedEvent)
 async def on_ready(event):
     print("Ready!")
 
-#TODO: If user is on starter, tell user they must upgrade the plan to use the bot, otherwise the bot will send a 45 byte audio file (typically means it failed)    
+#TODO: If user is on starter, tell user they must upgrade the plan to use the bot, otherwise the bot will send a <1KB byte audio file (typically means it failed)    
 
 @bot.command
 @lightbulb.option("apikey", "Your ElevenLabs API key. This key is NEVER stored anywhere and is only used to lookup your profile.")
