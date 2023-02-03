@@ -6,6 +6,8 @@ bot = lightbulb.BotApp("")
 async def on_ready(event):
     print("Ready!")
 
+#TODO: If user is on starter, tell user they must upgrade the plan to use the bot, otherwise the bot will send a 45 byte audio file (typically means it failed)    
+
 @bot.command
 @lightbulb.option("apikey", "Your ElevenLabs API key. This key is NEVER stored anywhere and is only used to lookup your profile.")
 @lightbulb.option("sendasjson", "Sends output as a JSON.", type=bool, required=True)
@@ -116,12 +118,4 @@ async def mainttscmd(ctx: lightbulb.context.Context):
     await ctx.respond(f)
     return
 
-@bot.command
-@lightbulb.command("addvoice", "Info on how to make a voice.")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def voiceinfo(ctx: lightbulb.context.Context):
-    await ctx.respond("You cannot add voices using this bot, you have to add one by going onto the website, but once it has been added, you can use the voice with the bot *for as long as your account is active*.")    
-    return
-
-
-bot.run(asyncio_debug=True)
+bot.run()
