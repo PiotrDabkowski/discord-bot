@@ -32,7 +32,7 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         site = "https://api.elevenlabs.io/v1/text-to-speech/yoZ06aMxZJJ28mfd3POQ"
     headers = {
     'accept': 'audio/mpeg',
-    'xi-api-key': ctx.options.apikey,
+    'xi-api-key': #to devs, add your api key here,
     'Content-Type': 'application/json'
     }
     if len(ctx.options.text) > 1000:
