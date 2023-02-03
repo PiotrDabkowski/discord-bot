@@ -28,5 +28,6 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         await ctx.respond("Done! Sending audio file...")
         f = hikari.File(audiofilename)
         await ctx.respond(f)
+        os.remove(audiofilename)
         return
 bot.run()
