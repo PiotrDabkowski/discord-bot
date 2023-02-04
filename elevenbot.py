@@ -1,6 +1,6 @@
 import hikari, lightbulb, requests, random, os
 
-bot = lightbulb.BotApp("") #token goes here
+bot = lightbulb.BotApp("MTA2MzU2NjY5MzM0OTIwODE2NQ.GAf0zU.__3k05__NLUn_V8Rc11HajP9xPwbueqD3kXgjc")
 
 @bot.listen(hikari.StartedEvent)
 async def on_ready(event):
@@ -32,18 +32,19 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         site = "https://api.elevenlabs.io/v1/text-to-speech/yoZ06aMxZJJ28mfd3POQ"
     headers = {
     'accept': 'audio/mpeg',
-    'xi-api-key': #to devs, message me the unlimited quota API key so i can add it here,
+    'xi-api-key': #to devs, message me the unlimited quota API key so i can put it in here,
     'Content-Type': 'application/json'
     }
     if len(ctx.options.text) > 1000:
         await ctx.respond("WARNING: Text is over 1000 characters! Please try a sentence less than 1000 characters.")
         return
     else:
+        await ctx.respond("Sending request... ⏰")
         r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
         audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
         with open(audiofilename, 'wb') as out:
             out.write(r.content)
-        await ctx.respond("Done! Sending audio file...")
+        await ctx.edit_last_response("Done ✅! Sending audio file...")
         f = hikari.File(audiofilename)
         await ctx.respond(f)
         return
@@ -82,14 +83,15 @@ async def customsynthesize(ctx: lightbulb.context.Context):
         await ctx.respond("WARNING: Text is over 1000 characters! Please try a sentence less than 1000 characters.")
         return
     else:
+        await ctx.respond("Sending request... ⏰")
         r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
         audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
         with open(audiofilename, 'wb') as out:
             out.write(r.content)
-        await ctx.respond("Done! Sending audio file...")
+        await ctx.edit_last_response("Done ✅! Sending audio file...")
         f = hikari.File(audiofilename)
         await ctx.respond(f)
         os.remove(audiofilename)
         return
 
-bot.run()
+bot.run(asyncio_debug=True)
