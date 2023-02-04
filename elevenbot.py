@@ -1,6 +1,6 @@
 import hikari, lightbulb, requests, random, os
 
-bot = lightbulb.BotApp("MTA2MzU2NjY5MzM0OTIwODE2NQ.GAf0zU.__3k05__NLUn_V8Rc11HajP9xPwbueqD3kXgjc")
+bot = lightbulb.BotApp("")
 
 @bot.listen(hikari.StartedEvent)
 async def on_ready(event):
