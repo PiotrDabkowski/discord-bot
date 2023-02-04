@@ -1,4 +1,4 @@
-import hikari, lightbulb, requests, random, os
+import hikari, lightbulb, requests, random, os, time, json as j
 
 bot = lightbulb.BotApp("")
 
@@ -44,10 +44,30 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
         with open(audiofilename, 'wb') as out:
             out.write(r.content)
-        await ctx.edit_last_response("Done ✅! Sending audio file...")
+        await ctx.respond("Done ✅! Sending audio file...")
         f = hikari.File(audiofilename)
         await ctx.respond(f)
         return
+
+@bot.command
+@lightbulb.option("apikey", "Your ElevenLabs API key. This key is NEVER stored anywhere and is only used to lookup your profile.")
+@lightbulb.command("voices", "Gets a list of all voices, custom and conversational that are on your account.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def voicelistcmd(ctx: lightbulb.context.Context):
+    site = "https://api.elevenlabs.io/v1/voices"
+    headers = {
+        'accept': 'application/json',
+        'xi-api-key': ctx.options.apikey
+    }
+    r = requests.get(site, headers=headers)
+    await ctx.respond("Listed voices tied to your account are below: ")
+    time.sleep(0.50)
+    fileobj = j.dumps(r.json(), indent=4)
+    with open("voices.json", 'w') as outfile:
+        outfile.write(fileobj)
+    f = hikari.File("voices.json")
+    await ctx.respond(f)
+    os.remove("voices.json")    
 
 @bot.command
 @lightbulb.command("about", "Details about the bot.")
@@ -88,7 +108,7 @@ async def customsynthesize(ctx: lightbulb.context.Context):
         audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
         with open(audiofilename, 'wb') as out:
             out.write(r.content)
-        await ctx.edit_last_response("Done ✅! Sending audio file...")
+        await ctx.respond("Done ✅! Sending audio file...")
         f = hikari.File(audiofilename)
         await ctx.respond(f)
         os.remove(audiofilename)
