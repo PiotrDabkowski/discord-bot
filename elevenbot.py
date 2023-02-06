@@ -1,6 +1,8 @@
-import hikari, lightbulb, requests, random, os, time, json as j
+import hikari, lightbulb, requests, random, os, time, json as j, miru
+from loginModal import ModalView
 
 bot = lightbulb.BotApp("")
+miru.install(bot)
 
 @bot.listen(hikari.StartedEvent)
 async def on_ready(event):
@@ -32,7 +34,7 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         site = "https://api.elevenlabs.io/v1/text-to-speech/yoZ06aMxZJJ28mfd3POQ"
     headers = {
     'accept': 'audio/mpeg',
-    'xi-api-key': #to devs, message me the unlimited quota API key so i can put it in here,
+    'xi-api-key': ctx.options.apikey,
     'Content-Type': 'application/json'
     }
     if len(ctx.options.text) > 1000:
@@ -50,24 +52,29 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         return
 
 @bot.command
-@lightbulb.option("apikey", "Your ElevenLabs API key. This key is NEVER stored anywhere and is only used to lookup your profile.")
 @lightbulb.command("voices", "Gets a list of all voices, custom and conversational that are on your account.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def voicelistcmd(ctx: lightbulb.context.Context):
-    site = "https://api.elevenlabs.io/v1/voices"
-    headers = {
-        'accept': 'application/json',
-        'xi-api-key': ctx.options.apikey
-    }
-    r = requests.get(site, headers=headers)
-    await ctx.respond("Listed voices tied to your account are below: ")
-    time.sleep(0.50)
-    fileobj = j.dumps(r.json(), indent=4)
-    with open("voices.json", 'w') as outfile:
-        outfile.write(fileobj)
-    f = hikari.File("voices.json")
-    await ctx.respond(f)
-    os.remove("voices.json")    
+    if not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("You are not logged in! Please run '/login' to continue.")
+        return
+    else:
+        site = "https://api.elevenlabs.io/v1/voices"
+        with open(f"{ctx.user.id}.txt", 'r') as outfile:
+            headers = {
+                'accept': 'application/json',
+                'xi-api-key': outfile.read()
+            }
+            outfile.close()
+        r = requests.get(site, headers=headers)
+        await ctx.respond("Listed voices tied to your account are below: ")
+        time.sleep(0.50)
+        fileobj = j.dumps(r.json(), indent=4)
+        with open("voices.json", 'w') as outfile:
+            outfile.write(fileobj)
+        f = hikari.File("voices.json")
+        await ctx.respond(f)
+        os.remove("voices.json")
 
 @bot.command
 @lightbulb.command("about", "Details about the bot.")
@@ -87,31 +94,44 @@ async def aboutcmd(ctx: lightbulb.context.Context):
     await ctx.respond(embed)
 
 @bot.command
-@lightbulb.option("voice_id", "Use your custom voices using your own API key.", required=True)
-@lightbulb.option("apikey", "Enter your own API key here for using your custom voices.", required=True)
+@lightbulb.command("login", "Login using your API key.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def logincmd(ctx: lightbulb.context.Context):
+    view = ModalView()
+    message = await ctx.respond("Click the button below to sign in.\n\n**This info will never be saved anywhere and will only be used to validate your profile.**", components=view)
+    await view.start(message)
+
+@bot.command
+@lightbulb.option("voice_id", "Voice ID to use. Run '/voices' for a list of voices you can use.", required=True)
 @lightbulb.option("text", "The text to synthesize. Max 1000 characters", required=True)
 @lightbulb.command("custom-synthesize", "Use your own API key to synthesize your custom voices.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def customsynthesize(ctx: lightbulb.context.Context):
-    site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id
-    headers = {
-        'accept': 'audio/mpeg',
-        'xi-api-key': ctx.options.apikey,
-        'Content-Type': 'application/json'
-    }
-    if len(ctx.options.text) > 1000:
-        await ctx.respond("WARNING: Text is over 1000 characters! Please try a sentence less than 1000 characters.")
+    if not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
-        await ctx.respond("Sending request... ⏰")
-        r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-        audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-        with open(audiofilename, 'wb') as out:
-            out.write(r.content)
-        await ctx.respond("Done ✅! Sending audio file...")
-        f = hikari.File(audiofilename)
-        await ctx.respond(f)
-        os.remove(audiofilename)
-        return
+        site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id
+        with open(f"{ctx.user.id}.txt", 'r') as outfile:  
+            headers = {
+                'accept': 'audio/mpeg',
+                'xi-api-key': outfile.read(),
+                'Content-Type': 'application/json'
+            }
+            outfile.close()
+        if len(ctx.options.text) > 1000:
+            await ctx.respond("WARNING: Text is over 1000 characters! Please try a sentence less than 1000 characters.")
+            return
+        else:
+            await ctx.respond("Sending request... ⏰")
+            r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
+            audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
+            with open(audiofilename, 'wb') as out:
+                out.write(r.content)
+            await ctx.respond("Done ✅! Sending audio file...")
+            f = hikari.File(audiofilename)
+            await ctx.respond(f)
+            os.remove(audiofilename)
+            return
 
 bot.run(asyncio_debug=True)
