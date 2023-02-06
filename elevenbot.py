@@ -41,6 +41,26 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             return
 
 @bot.command
+@lightbulb.option("voice_id", "Voice ID to get settings.", required=True)
+@lightbulb.command("get-voice-settings", "Gets the settings for the voice.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def settingscmd(ctx: lightbulb.context.Context):
+    if not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("You are not logged in! Please run '/login' to continue.")
+        return
+    else:
+        site = "https://api.elevenlabs.io/v1/voices/" + ctx.options.voice_id + "/settings"
+        with open(f"{ctx.user.id}.txt", 'r') as outfile:
+            headers = {
+                'accept': 'application/json',
+                'xi-api-key': outfile.read()
+            }
+            outfile.close()
+        await ctx.respond("Getting settings... ⏰")
+        r = requests.get(site, headers=headers)
+        await ctx.edit_last_response(f"Stability: {r.json()['stability']}\nSimilarity: {r.json()['similarity_boost']}")
+        
+@bot.command
 @lightbulb.command("userinfo", "Gets more info about character count, sub tier, etc")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def userinfocmd(ctx: lightbulb.context.Context):
