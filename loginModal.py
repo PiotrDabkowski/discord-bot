@@ -13,6 +13,7 @@ class LoginModal(miru.Modal):
         }
         r = requests.get(site, headers=headers)
         if r.status_code == 200:
+            #all this below is temporary until a better storage solution is found
             with open(f"{ctx.user.id}.txt", 'w') as validate:
                 validate.write(self.apikey.value)
                 validate.close()
