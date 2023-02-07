@@ -41,10 +41,45 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             return
 
 @bot.command
+@lightbulb.option("similarity", "New similarity amount. Enter a value between 0 and 1.", type=float, required=True)
+@lightbulb.option("stability", "New stability amount. Enter a value between 0 and 1.", type=float, required=True)
+@lightbulb.option("voice_id", "The voice ID of the voice you want to change.")
+@lightbulb.command("change-voice-settings", "Change settings.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def changesettingscmd(ctx: lightbulb.context.Context):
+    if not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("You are not logged in! Please run '/login' to continue.")
+        return
+    else:
+        site = "https://api.elevenlabs.io/v1/voices/" + ctx.options.voice_id + "/settings/edit"
+        with open(f"{ctx.user.id}.txt", 'r') as outfile:
+            headers = {
+                'accept': 'application/json',
+                'xi-api-key': outfile.read(),
+                'Content-Type': 'application/json'
+            }
+            outfile.close()
+        if ctx.options.stability >= 2:
+            await ctx.respond("Stability is too high! Please lower value.")
+            return
+        elif ctx.options.similarity >= 2:
+            await ctx.respond("Similarity is too high! Please lower value.")
+            return
+        else:
+            await ctx.respond("Changing voice settings... ⏰")
+            r = requests.post(site, json={"stability": ctx.options.stability, "similarity_boost": ctx.options.similarity}, headers=headers)
+            if r.status_code == 200:
+                await ctx.edit_last_response("Done ✅! New settings should now be set.")
+                return
+            elif r.status_code == 500:
+                await ctx.edit_last_response("An error happened! Try inputting a lower number.")
+                return
+
+@bot.command
 @lightbulb.option("voice_id", "Voice ID to get settings.", required=True)
 @lightbulb.command("get-voice-settings", "Gets the settings for the voice.")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def settingscmd(ctx: lightbulb.context.Context):
+async def getcurrentsettingscmd(ctx: lightbulb.context.Context):
     if not os.path.exists(f"{ctx.user.id}.txt"):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
@@ -59,13 +94,14 @@ async def settingscmd(ctx: lightbulb.context.Context):
         await ctx.respond("Getting settings... ⏰")
         r = requests.get(site, headers=headers)
         await ctx.edit_last_response(f"Stability: {r.json()['stability']}\nSimilarity: {r.json()['similarity_boost']}")
-        
+
 @bot.command
 @lightbulb.command("userinfo", "Gets more info about character count, sub tier, etc")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def userinfocmd(ctx: lightbulb.context.Context):
     if not os.path.exists(f"{ctx.user.id}.txt"):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
+        return
     else:
         site = "https://api.elevenlabs.io/v1/user"
         with open(f"{ctx.user.id}.txt", 'r') as outfile:
