@@ -31,14 +31,20 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         else:
             await ctx.respond("Sending request... ⏰")
             r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-            audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-            with open(audiofilename, 'wb') as out:
-                out.write(r.content)
-            await ctx.respond("Done ✅! Sending audio file...")
-            f = hikari.File(audiofilename)
-            await ctx.respond(f)
-            os.remove(audiofilename)
-            return
+            await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
+            if r.status_code == 400:
+                await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+                return
+            else:
+                await ctx.edit_last_response("Voice ID is valid! ✅")
+                audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
+                with open(audiofilename, 'wb') as out:
+                    out.write(r.content)
+                await ctx.respond("Done ✅! Sending audio file...")
+                f = hikari.File(audiofilename)
+                await ctx.respond(f)
+                os.remove(audiofilename)
+                return
 
 @bot.command
 @lightbulb.option("similarity", "New similarity amount. Enter a value between 0 and 1.", type=float, required=True)
