@@ -180,7 +180,7 @@ async def aboutcmd(ctx: lightbulb.context.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def logincmd(ctx: lightbulb.context.Context):
     view = ModalView()
-    message = await ctx.respond("Click the button below to sign in.\n\n**This info will never be saved anywhere and will only be used to validate your profile.**", components=view)
+    message = await ctx.respond("Click the button below to sign in.\n\n**This info will have to be saved but will only be used to validate your profile.**", components=view)
     await view.start(message)
 
 bot.run()
