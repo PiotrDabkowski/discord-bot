@@ -47,6 +47,19 @@ async def mainttscmd(ctx: lightbulb.context.Context):
                 return
 
 @bot.command
+@lightbulb.command("logout", "If you really dont trust the bot saving your API key, you can logout and the bot will erase it.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def logoutcmd(ctx: lightbulb.context.Context):
+    if not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("File doesnt exist or has been deleted already!")
+        return
+    else:
+        await ctx.respond("Deleting API key file... ⏰")
+        os.remove(f"{ctx.user.id}.txt")
+        await ctx.edit_last_response("Key deleted! ✅")
+
+            
+@bot.command
 @lightbulb.option("similarity", "New similarity amount. Enter a value between 0 and 1.", type=float, required=True)
 @lightbulb.option("stability", "New stability amount. Enter a value between 0 and 1.", type=float, required=True)
 @lightbulb.option("voice_id", "The voice ID of the voice you want to change.")
