@@ -183,4 +183,13 @@ async def logincmd(ctx: lightbulb.context.Context):
     message = await ctx.respond("Click the button below to sign in.\n\n**This info will have to be saved but will only be used to validate your profile.**", components=view)
     await view.start(message)
 
-bot.run()
+bot.run(
+    activity=hikari.Activity(
+        name="with a voice favorite feature 👀",
+        type=hikari.ActivityType.PLAYING
+    ),
+    ignore_session_start_limit=True,
+    check_for_updates=False,
+    status=hikari.Status.ONLINE,
+    coroutine_tracking_depth=20,
+    propagate_interrupts=True
