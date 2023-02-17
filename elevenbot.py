@@ -47,6 +47,49 @@ async def mainttscmd(ctx: lightbulb.context.Context):
                 return
 
 @bot.command
+@lightbulb.option("text", "The text to synthesize.")
+@lightbulb.command("favorite-synthesize", "Synthesize using favorite voice ID.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def favsynthesizecmd(ctx: lightbulb.context.Context):
+    if not os.path.exists(f"{ctx.user.id}-favorite.txt"):
+        await ctx.respond("No favorite detected! Set a favorite up first.")
+        return
+    elif not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("You are not logged in! Please run '/login' to continue.")
+        return
+    else:
+        with open(f"{ctx.user.id}-favorite.txt", 'r') as favid:
+            site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
+            favid.close()
+        with open(f"{ctx.user.id}.txt", 'r') as outfile:
+            headers = {
+            'accept': 'audio/mpeg',
+            'xi-api-key': outfile.read(),
+            'Content-Type': 'application/json'
+            }
+        if len(ctx.options.text) >= 1000:
+            await ctx.respond("Text is more than 1000 characters! Please try a shorter sentence.")
+            return
+        else:
+            await ctx.respond("Sending request... ⏰")
+            r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
+            await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
+            if r.status_code == 400:
+                await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+                return
+            else:
+                await ctx.edit_last_response("Voice ID is valid! ✅")
+                audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
+                with open(audiofilename, 'wb') as out:
+                    out.write(r.content)
+                await ctx.respond("Done ✅! Sending audio file...")
+                f = hikari.File(audiofilename)
+                await ctx.respond(f)
+                os.remove(audiofilename)
+                return
+
+
+@bot.command
 @lightbulb.command("logout", "If you really dont trust the bot saving your API key, you can logout and the bot will erase it.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def logoutcmd(ctx: lightbulb.context.Context):
@@ -58,7 +101,6 @@ async def logoutcmd(ctx: lightbulb.context.Context):
         os.remove(f"{ctx.user.id}.txt")
         await ctx.edit_last_response("Key deleted! ✅")
 
-            
 @bot.command
 @lightbulb.option("similarity", "New similarity amount. Enter a value between 0 and 1.", type=float, required=True)
 @lightbulb.option("stability", "New stability amount. Enter a value between 0 and 1.", type=float, required=True)
@@ -93,6 +135,33 @@ async def changesettingscmd(ctx: lightbulb.context.Context):
             elif r.status_code == 500:
                 await ctx.edit_last_response("An error happened! Try inputting a lower number.")
                 return
+
+@bot.command
+@lightbulb.option("voice_id", "The voice ID you want to add to the favorites.")
+@lightbulb.command("add-favorite", "Add a voice ID to favorites. Run '/favorite-synthesize' to use your favorite voice ID.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def favcmd(ctx: lightbulb.context.Context):
+    if os.path.exists(f"{ctx.user.id}-favorite.txt"):
+        await ctx.respond("You can only save one voice ID per favorite! To remove a favorite, run '/remove-favorite'.")
+        return
+    else:
+        with open(f"{ctx.user.id}-favorite.txt", 'w') as favwrite:
+            favwrite.write(ctx.options.voice_id)
+            favwrite.close()
+        await ctx.respond("Favorite voice ID set! Now, you can use the '/favorite-synthesize' command to synthesize without needing to provide a voice ID!")
+        return
+
+@bot.command
+@lightbulb.command("remove-favorite", "Removes the voice ID from your favorites.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def removefavcmd(ctx: lightbulb.context.Context):
+    if not os.path.exists(f"{ctx.user.id}-favorite.txt"):
+        await ctx.respond("You do not have a favorite voice ID set!")
+        return
+    else:
+        os.remove(f"{ctx.user.id}-favorite.txt")
+        await ctx.respond("Favorite list removed! ✅")
+        return    
 
 @bot.command
 @lightbulb.option("voice_id", "Voice ID to get settings.", required=True)
@@ -132,6 +201,7 @@ async def userinfocmd(ctx: lightbulb.context.Context):
         await ctx.respond("Getting user info... ⏰")
         r = requests.get(site, headers=headers)
         await ctx.edit_last_response(f"User info for user {ctx.user.username}:\n\nSubscription: {r.json()['subscription']['tier']}\nCharacter count: {r.json()['subscription']['character_count']}\nCharacter limit: {r.json()['subscription']['character_limit']}\nCan user extend character limit? {r.json()['subscription']['can_extend_character_limit']}\nIs user allowed to extend character limit? {r.json()['subscription']['allowed_to_extend_character_limit']}\nTime until next character reset (in unix): {r.json()['subscription']['next_character_count_reset_unix']}\nVoice limit: {r.json()['subscription']['voice_limit']}\nCan user extend voice limit? {r.json()['subscription']['can_extend_voice_limit']}\nCan user use instant voice cloning? {r.json()['subscription']['can_use_instant_voice_cloning']}\nIs user a new user? {r.json()['is_new_user']}")
+        
 
 @bot.command
 @lightbulb.command("voices", "Gets a list of all voices that are on your account.")
@@ -180,16 +250,17 @@ async def aboutcmd(ctx: lightbulb.context.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def logincmd(ctx: lightbulb.context.Context):
     view = ModalView()
-    message = await ctx.respond("Click the button below to sign in.\n\n**This info will have to be saved but will only be used to validate your profile.**", components=view)
+    message = await ctx.respond("Click the button below to sign in.\n\n**This info will have to be saved but will only be used to validate your profile. If you really dont trust it**", components=view)
     await view.start(message)
 
 bot.run(
     activity=hikari.Activity(
-        name="with a voice favorite feature 👀",
-        type=hikari.ActivityType.PLAYING
+        name="AI voices.",
+        type=hikari.ActivityType.LISTENING
     ),
     ignore_session_start_limit=True,
     check_for_updates=False,
     status=hikari.Status.ONLINE,
     coroutine_tracking_depth=20,
     propagate_interrupts=True
+)
