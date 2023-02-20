@@ -1,5 +1,6 @@
 import hikari, lightbulb, requests, random, os, time, json as j, miru
 from loginModal import ModalView
+from suggestModal import ModalView as modalsuggest
 
 bot = lightbulb.BotApp("")
 miru.install(bot)
@@ -46,6 +47,14 @@ async def mainttscmd(ctx: lightbulb.context.Context):
                 os.remove(audiofilename)
                 return
 
+@bot.command
+@lightbulb.command("suggest", "Suggest a future idea or implementation.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def modals(ctx: lightbulb.context.Context) -> None:
+    view = modalsuggest()
+    message = await ctx.respond("Click the button below to suggest a new feature! If I decide to add this to the bot, you will be credited everytime someone runs that command!", components=view)
+    await view.start(message)
+            
 @bot.command
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("favorite-synthesize", "Synthesize using favorite voice ID.")
