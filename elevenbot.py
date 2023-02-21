@@ -41,7 +41,7 @@ async def mainttscmd(ctx: lightbulb.context.Context):
                 audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
                 with open(audiofilename, 'wb') as out:
                     out.write(r.content)
-                await ctx.respond("Done ✅! Sending audio file...")
+                await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters. You have {r.json()['subscription']['character_count']} remaining on your account.")
                 f = hikari.File(audiofilename)
                 await ctx.respond(f)
                 os.remove(audiofilename)
@@ -91,7 +91,7 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
                 audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
                 with open(audiofilename, 'wb') as out:
                     out.write(r.content)
-                await ctx.respond("Done ✅! Sending audio file...")
+                await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters. You have {r.json()['subscription']['character_count']} remaining on your account.")
                 f = hikari.File(audiofilename)
                 await ctx.respond(f)
                 os.remove(audiofilename)
