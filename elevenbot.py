@@ -36,6 +36,9 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             if r.status_code == 400:
                 await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
                 return
+            elif r.json() == {'detail': 'Not Found'}:
+                await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+                return
             else:
                 await ctx.edit_last_response("Voice ID is valid! ✅")
                 audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
