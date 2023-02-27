@@ -39,6 +39,12 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             elif r.json() == {'detail': 'Not Found'}:
                 await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
                 return
+            
+            #TODO wait until my sub runs out so i can test this
+            #elif r.json() == {'detail': "quota_exceeded"}:
+            #    await ctx.edit_last_response("You have reached your quota limit! You can still use this with the free plan, but you cannot use custom voices unless you upgrade.")
+            #    return
+      
             else:
                 await ctx.edit_last_response("Voice ID is valid! ✅")
                 audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
