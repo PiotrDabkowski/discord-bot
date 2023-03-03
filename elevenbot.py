@@ -82,6 +82,14 @@ async def modals(ctx: lightbulb.context.Context) -> None:
     view = modalsuggest()
     message = await ctx.respond("Click the button below to suggest a new feature! If I decide to add this to the bot, you will be credited everytime someone runs that command!", components=view)
     await view.start(message)
+    
+@bot.command
+@lightbulb.command("ping", "Gets the bots ping.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def pingcmd(ctx: lightbulb.context.Context):
+    heartbeat = ctx.bot.heartbeat_latency * 1000
+    await ctx.respond(f"Ping: {heartbeat:,.2f}ms.")
+    return
 
 @bot.command
 @lightbulb.option("translate_to", "Translate to a different language. Not all languages are supported.", required=False, choices=['eu', 'be', 'bn', 'bs', 'bg', 'ca', 'ceb', 'zh-cn', 'zh-tw', 'fr', 'ja'])
