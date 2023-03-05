@@ -35,6 +35,8 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             return
         else:
             await ctx.respond("Sending request... ⏰")
+            await asyncio.sleep(0.50)
+            await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
             if ctx.options.translate_to is not None:
                 respond_translate_to = translator.translate(text=ctx.options.text, dest=ctx.options.translate_to, src='en').text
                 r = requests.post(site, json={"text": respond_translate_to}, headers=headers)
@@ -58,11 +60,6 @@ async def mainttscmd(ctx: lightbulb.context.Context):
                 if r.status_code == 400:
                     await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
                     return
-
-                #TODO wait until my sub runs out so i can test this
-                #elif r.json() == {'detail': "quota_exceeded"}:
-                #    await ctx.edit_last_response("You have reached your quota limit! You can still use this with the free plan, but you cannot use custom voices unless you upgrade.")
-                #    return
 
                 else:
                     await ctx.edit_last_response("Voice ID is valid! ✅")
@@ -118,6 +115,8 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
             return
         else:
             await ctx.respond("Sending request... ⏰")
+            await asyncio.sleep(0.50)
+            await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
             if ctx.options.translate_to is not None:
                 await ctx.edit_last_response("Translating to selected language... ⏰")
                 respond_translate_to = translator.translate(text=ctx.options.text, dest=ctx.options.translate_to, src='en').text
