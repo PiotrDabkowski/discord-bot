@@ -1,9 +1,7 @@
-import hikari, lightbulb, requests, random, os, time, json as j, miru
+import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio
 from loginModal import ModalView
 from suggestModal import ModalView as modalsuggest
-from googletrans import Translator
 
-translator = Translator()
 
 bot = lightbulb.BotApp("")
 miru.install(bot)
@@ -13,7 +11,7 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
-@lightbulb.option("translate_to", "Translate to a different language. Not all languages are supported.", required=False, choices=['eu', 'be', 'bn', 'bs', 'bg', 'ca', 'ceb', 'zh-cn', 'zh-tw', 'fr', 'ja'])
+@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=True, type=bool)
 @lightbulb.option("voice_id", "Voice ID to use. Run '/voices' for a list of voices you can use.", required=True)
 @lightbulb.option("text", "Text to use the TTS. Max is 1000.", required=True)
 @lightbulb.command("synthesize", "Main synthesize command.")
@@ -23,7 +21,10 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
-        site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id
+        if ctx.options.use_stream == True:
+            site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id + '/stream'
+        else:
+            site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id
         with open(f"{ctx.user.id}.txt", 'r') as outfile:
             headers = {
             'accept': 'audio/mpeg',
@@ -37,49 +38,30 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             await ctx.respond("Sending request... ⏰")
             await asyncio.sleep(0.50)
             await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
-            if ctx.options.translate_to is not None:
-                respond_translate_to = translator.translate(text=ctx.options.text, dest=ctx.options.translate_to, src='en').text
-                r = requests.post(site, json={"text": respond_translate_to}, headers=headers)
-                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-                if r.status_code == 400:
-                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
-                    return
-                else:
-                    await ctx.edit_last_response(f"Voice ID is valid! ✅")
-                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                    with open(audiofilename, 'wb') as out:
-                        out.write(r.content)
-                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                    f = hikari.File(audiofilename)
-                    await ctx.respond(f)
-                    os.remove(audiofilename)
-                    return
-            elif ctx.options.translate_to is None:
-                r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-                if r.status_code == 400:
-                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
-                    return
-
-                else:
-                    await ctx.edit_last_response("Voice ID is valid! ✅")
-                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                    with open(audiofilename, 'wb') as out:
-                        out.write(r.content)
-                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                    f = hikari.File(audiofilename)
-                    await ctx.respond(f)
-                    os.remove(audiofilename)
-                    return
+            r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
+            await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
+            if r.status_code == 400:
+                await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+                return
+            else:
+                await ctx.edit_last_response("Voice ID is valid! ✅")
+                audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
+                with open(audiofilename, 'wb') as out:
+                    out.write(r.content)
+                await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
+                f = hikari.File(audiofilename)
+                await ctx.respond(f)
+                os.remove(audiofilename)
+                return
 
 @bot.command
-@lightbulb.command("suggest", "Suggest a future idea or implementation.")
+@lightbulb.command("suggest", description="Suggest a future idea or implementation.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def modals(ctx: lightbulb.context.Context) -> None:
     view = modalsuggest()
     message = await ctx.respond("Click the button below to suggest a new feature! If I decide to add this to the bot, you will be credited everytime someone runs that command!", components=view)
     await view.start(message)
-    
+
 @bot.command
 @lightbulb.command("ping", "Gets the bots ping.")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -89,7 +71,7 @@ async def pingcmd(ctx: lightbulb.context.Context):
     return
 
 @bot.command
-@lightbulb.option("translate_to", "Translate to a different language. Not all languages are supported.", required=False, choices=['eu', 'be', 'bn', 'bs', 'bg', 'ca', 'ceb', 'zh-cn', 'zh-tw', 'fr', 'ja'])
+@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=True, type=bool)
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("favorite-synthesize", "Synthesize using favorite voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -102,7 +84,10 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
         return
     else:
         with open(f"{ctx.user.id}-favorite.txt", 'r') as favid:
-            site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
+            if ctx.options.use_stream == True:
+                site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read() + '/stream'
+            else:
+                site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
             favid.close()
         with open(f"{ctx.user.id}.txt", 'r') as outfile:
             headers = {
@@ -117,40 +102,7 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
             await ctx.respond("Sending request... ⏰")
             await asyncio.sleep(0.50)
             await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
-            if ctx.options.translate_to is not None:
-                await ctx.edit_last_response("Translating to selected language... ⏰")
-                respond_translate_to = translator.translate(text=ctx.options.text, dest=ctx.options.translate_to, src='en').text
-                r = requests.post(site, json={"text": respond_translate_to}, headers=headers)
-                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-                if r.status_code == 400:
-                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
-                    return
-                else:
-                    await ctx.edit_last_response(f"Voice ID is valid! ✅")
-                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                    with open(audiofilename, 'wb') as out:
-                        out.write(r.content)
-                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                    f = hikari.File(audiofilename)
-                    await ctx.respond(f)
-                    os.remove(audiofilename)
-                    return
-            elif ctx.options.translate_to is None:
-                r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-                if r.status_code == 400:
-                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
-                    return
-                else:
-                    await ctx.edit_last_response("Voice ID is valid! ✅")
-                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                    with open(audiofilename, 'wb') as out:
-                        out.write(r.content)
-                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                    f = hikari.File(audiofilename)
-                    await ctx.respond(f)
-                    os.remove(audiofilename)
-                    return
+            r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
             await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
             if r.status_code == 400:
                 await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
