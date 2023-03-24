@@ -11,7 +11,7 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
-@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=True, type=bool)
+@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=False, type=bool, default=False)
 @lightbulb.option("voice_id", "Voice ID to use. Run '/voices' for a list of voices you can use.", required=True)
 @lightbulb.option("text", "Text to use the TTS. Max is 1000.", required=True)
 @lightbulb.command("synthesize", "Main synthesize command.")
@@ -21,6 +21,7 @@ async def mainttscmd(ctx: lightbulb.context.Context):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
+        await ctx.respond("WARNING: This command will be deprecated in a future update to ElevenBot. Please use '/favorite-synthesize' instead!")
         if ctx.options.use_stream == True:
             site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id + '/stream'
         else:
@@ -36,23 +37,25 @@ async def mainttscmd(ctx: lightbulb.context.Context):
             return
         else:
             await ctx.respond("Sending request... ⏰")
-            await asyncio.sleep(0.50)
-            await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
             r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-            await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-            if r.status_code == 400:
-                await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+            if r.json()['detail']['message'] == "You are not permitted to use instantly cloned voices, please upgrade your subscription.":
+                await ctx.edit_last_response("ERROR: Your subscription does not allow you to synthesize custom voices! Are you on 'Starter' or above?")
                 return
             else:
-                await ctx.edit_last_response("Voice ID is valid! ✅")
-                audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                with open(audiofilename, 'wb') as out:
-                    out.write(r.content)
-                await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                f = hikari.File(audiofilename)
-                await ctx.respond(f)
-                os.remove(audiofilename)
-                return
+                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
+                if r.status_code == 400:
+                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+                    return
+                else:
+                    await ctx.edit_last_response("Voice ID is valid! ✅")
+                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
+                    with open(audiofilename, 'wb') as out:
+                        out.write(r.content)
+                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
+                    f = hikari.File(audiofilename)
+                    await ctx.respond(f)
+                    os.remove(audiofilename)
+                    return
 
 @bot.command
 @lightbulb.command("suggest", description="Suggest a future idea or implementation.")
@@ -71,7 +74,7 @@ async def pingcmd(ctx: lightbulb.context.Context):
     return
 
 @bot.command
-@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=True, type=bool)
+@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=False, type=bool, default=False)
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("favorite-synthesize", "Synthesize using favorite voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -103,20 +106,24 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
             await asyncio.sleep(0.50)
             await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
             r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-            await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-            if r.status_code == 400:
-                await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+            if r.json()['detail']['message'] == "You are not permitted to use instantly cloned voices, please upgrade your subscription.":
+                await ctx.edit_last_response("ERROR: Your subscription does not allow you to synthesize custom voices! Are you on 'Starter' or above?")
                 return
             else:
-                await ctx.edit_last_response("Voice ID is valid! ✅")
-                audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                with open(audiofilename, 'wb') as out:
-                    out.write(r.content)
-                await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                f = hikari.File(audiofilename)
-                await ctx.respond(f)
-                os.remove(audiofilename)
-                return
+                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
+                if r.status_code == 400:
+                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
+                    return
+                else:
+                    await ctx.edit_last_response("Voice ID is valid! ✅")
+                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
+                    with open(audiofilename, 'wb') as out:
+                        out.write(r.content)
+                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
+                    f = hikari.File(audiofilename)
+                    await ctx.respond(f)
+                    os.remove(audiofilename)
+                    return
 
 @bot.command
 @lightbulb.command("logout", "If you really dont trust the bot saving your API key, you can logout and the bot will erase it.")
