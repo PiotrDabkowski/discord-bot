@@ -56,14 +56,6 @@ async def mainttscmd(ctx: lightbulb.context.Context):
                     return
 
 @bot.command
-@lightbulb.command("suggest", description="Suggest a future idea or implementation.")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def modals(ctx: lightbulb.context.Context) -> None:
-    view = modalsuggest()
-    message = await ctx.respond("Click the button below to suggest a new feature! If I decide to add this to the bot, you will be credited everytime someone runs that command!", components=view)
-    await view.start(message)
-
-@bot.command
 @lightbulb.command("ping", "Gets the bots ping.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def pingcmd(ctx: lightbulb.context.Context):
