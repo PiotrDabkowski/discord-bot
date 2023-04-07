@@ -1,3 +1,9 @@
+import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio
+from loginModal import ModalView
+
+bot = lightbulb.BotApp("")
+miru.install(bot)
+
 @bot.listen(hikari.StartedEvent)
 async def on_ready(event):
     print("Ready!")
