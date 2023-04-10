@@ -9,61 +9,6 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
-@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=False, type=bool, default=False)
-@lightbulb.option("voice_id", "Voice ID to use. Run '/voices' for a list of voices you can use.", required=True)
-@lightbulb.option("text", "Text to use the TTS. Max is 1000.", required=True)
-@lightbulb.command("synthesize", "Main synthesize command.")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def mainttscmd(ctx: lightbulb.context.Context):
-    if not os.path.exists(f"{ctx.user.id}.txt"):
-        await ctx.respond("You are not logged in! Please run '/login' to continue.")
-        return
-    else:
-        await ctx.respond("WARNING: This command will be deprecated in a future update to ElevenBot. Please use '/favorite-synthesize' instead!")
-        if ctx.options.use_stream == True:
-            site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id + '/stream'
-        else:
-            site = "https://api.elevenlabs.io/v1/text-to-speech/" + ctx.options.voice_id
-        with open(f"{ctx.user.id}.txt", 'r') as outfile:
-            headers = {
-            'accept': 'audio/mpeg',
-            'xi-api-key': outfile.read(),
-            'Content-Type': 'application/json'
-            }
-        if len(ctx.options.text) > 1000:
-            await ctx.respond("WARNING: Text is over 1000 characters! Please try a sentence less than 1000 characters.")
-            return
-        else:
-            await ctx.respond("Sending request... ⏰")
-            r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-            if r.json()['detail']['message'] == "You are not permitted to use instantly cloned voices, please upgrade your subscription.":
-                await ctx.edit_last_response("ERROR: Your subscription does not allow you to synthesize custom voices! Are you on 'Starter' or above?")
-                return
-            else:
-                await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
-                if r.status_code == 400:
-                    await ctx.edit_last_response("ERROR: Entered voice ID does not exist! Did you enter the ID correctly?")
-                    return
-                else:
-                    await ctx.edit_last_response("Voice ID is valid! ✅")
-                    audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                    with open(audiofilename, 'wb') as out:
-                        out.write(r.content)
-                    await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
-                    f = hikari.File(audiofilename)
-                    await ctx.respond(f)
-                    os.remove(audiofilename)
-                    return
-
-@bot.command
-@lightbulb.command("ping", "Gets the bots ping.")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def pingcmd(ctx: lightbulb.context.Context):
-    heartbeat = ctx.bot.heartbeat_latency * 1000
-    await ctx.respond(f"Ping: {heartbeat:,.2f}ms.")
-    return
-
-@bot.command
 @lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=True, type=bool)
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("favorite-synthesize", "Synthesize using favorite voice ID.")
@@ -76,6 +21,8 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
+        await ctx.respond("WARNING: This command will be renamed to 'synthesize' in a future update to ElevenBot!")
+        time.sleep(3)
         with open(f"{ctx.user.id}-favorite.txt", 'r') as favid:
             if ctx.options.use_stream == True:
                 site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read() + '/stream'
@@ -96,7 +43,7 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
             await asyncio.sleep(0.50)
             await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
             r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-            if r.json()['detail']['message'] == "You are not permitted to use instantly cloned voices, please upgrade your subscription.":
+            if r.json()['detail']['status'] == "unauthorized":
                 await ctx.edit_last_response("ERROR: Your subscription does not allow you to synthesize custom voices! Are you on 'Starter' or above?")
                 return
             else:
