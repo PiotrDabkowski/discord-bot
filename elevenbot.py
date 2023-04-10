@@ -1,4 +1,4 @@
-import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio
+import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio, datetime
 from loginModal import ModalView
 
 bot = lightbulb.BotApp("")
@@ -118,7 +118,7 @@ async def userinfocmd(ctx: lightbulb.context.Context):
             outfile.close()
         await ctx.respond("Getting user info... ⏰")
         r = requests.get(site, headers=headers)
-        await ctx.edit_last_response(f"User info for user {ctx.user.username}:\n\nSubscription: {r.json()['subscription']['tier']}\nCharacter count: {r.json()['subscription']['character_count']}\nCharacter limit: {r.json()['subscription']['character_limit']}\nCan user extend character limit? {r.json()['subscription']['can_extend_character_limit']}\nIs user allowed to extend character limit? {r.json()['subscription']['allowed_to_extend_character_limit']}\nTime until next character reset (in unix): {r.json()['subscription']['next_character_count_reset_unix']}\nVoice limit: {r.json()['subscription']['voice_limit']}\nCan user extend voice limit? {r.json()['subscription']['can_extend_voice_limit']}\nCan user use instant voice cloning? {r.json()['subscription']['can_use_instant_voice_cloning']}\nIs user a new user? {r.json()['is_new_user']}")
+      await ctx.edit_last_response(f"User info for user {ctx.user.username}:\n\nSubscription: {r.json()['subscription']['tier']}\nCharacter count: {r.json()['subscription']['character_count']}\nCharacter limit: {r.json()['subscription']['character_limit']}\nCan user extend character limit? {r.json()['subscription']['can_extend_character_limit']}\nIs user allowed to extend character limit? {r.json()['subscription']['allowed_to_extend_character_limit']}\nTime until next character reset (in datetime format): {datetime.datetime.fromtimestamp(int(r.json()['subscription']['next_character_count_reset_unix'])).strftime('%m-%d-%Y %H:%M:%S')}\nVoice limit: {r.json()['subscription']['voice_limit']}\nCan user extend voice limit? {r.json()['subscription']['can_extend_voice_limit']}\nCan user use instant voice cloning? {r.json()['subscription']['can_use_instant_voice_cloning']}\nIs user a new user? {r.json()['is_new_user']}")
         
 @bot.command
 @lightbulb.command("voices", "Gets a list of all voices that are on your account.")
