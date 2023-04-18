@@ -1,7 +1,7 @@
-import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio, datetime
+import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio, datetime, traceback
 from loginModal import ModalView
 
-bot = lightbulb.BotApp("")
+bot = lightbulb.BotApp("MTA2MzU2NjY5MzM0OTIwODE2NQ.G0yMFl.cLUQFFQ09Zpy_ydziyVZll1rTJ6d714iACJ4lU")
 miru.install(bot)
 
 @bot.listen(hikari.StartedEvent)
@@ -40,11 +40,9 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
             return
         else:
             await ctx.respond("Sending request... ⏰")
-            await asyncio.sleep(0.50)
-            await ctx.edit_last_response("Sending request... ⏰\n\nIf this takes more than **5 seconds**, some heavy site traffic is happening.")
             r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
-            if r.json()['detail']['status'] == "unauthorized":
-                await ctx.edit_last_response("ERROR: Your subscription does not allow you to synthesize custom voices! Are you on 'Starter' or above?")
+            if r.ok != True:
+                await ctx.edit_last_response(f"ERROR: Error traceback:\n\n{traceback.format_exc()}")
                 return
             else:
                 await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
@@ -118,7 +116,7 @@ async def userinfocmd(ctx: lightbulb.context.Context):
             outfile.close()
         await ctx.respond("Getting user info... ⏰")
         r = requests.get(site, headers=headers)
-      await ctx.edit_last_response(f"User info for user {ctx.user.username}:\n\nSubscription: {r.json()['subscription']['tier']}\nCharacter count: {r.json()['subscription']['character_count']}\nCharacter limit: {r.json()['subscription']['character_limit']}\nCan user extend character limit? {r.json()['subscription']['can_extend_character_limit']}\nIs user allowed to extend character limit? {r.json()['subscription']['allowed_to_extend_character_limit']}\nTime until next character reset (in datetime format): {datetime.datetime.fromtimestamp(int(r.json()['subscription']['next_character_count_reset_unix'])).strftime('%m-%d-%Y %H:%M:%S')}\nVoice limit: {r.json()['subscription']['voice_limit']}\nCan user extend voice limit? {r.json()['subscription']['can_extend_voice_limit']}\nCan user use instant voice cloning? {r.json()['subscription']['can_use_instant_voice_cloning']}\nIs user a new user? {r.json()['is_new_user']}")
+        await ctx.edit_last_response(f"User info for user {ctx.user.username}:\n\nSubscription: {r.json()['subscription']['tier']}\nCharacter count: {r.json()['subscription']['character_count']}\nCharacter limit: {r.json()['subscription']['character_limit']}\nCan user extend character limit? {r.json()['subscription']['can_extend_character_limit']}\nIs user allowed to extend character limit? {r.json()['subscription']['allowed_to_extend_character_limit']}\nTime until next character reset (in datetime format): {datetime.datetime.fromtimestamp(int(r.json()['subscription']['next_character_count_reset_unix'])).strftime('%m-%d-%Y %H:%M:%S')}\nVoice limit: {r.json()['subscription']['voice_limit']}\nCan user extend voice limit? {r.json()['subscription']['can_extend_voice_limit']}\nCan user use instant voice cloning? {r.json()['subscription']['can_use_instant_voice_cloning']}\nIs user a new user? {r.json()['is_new_user']}")
         
 @bot.command
 @lightbulb.command("voices", "Gets a list of all voices that are on your account.")
