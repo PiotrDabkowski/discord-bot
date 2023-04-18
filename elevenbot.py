@@ -1,7 +1,7 @@
 import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio, datetime, traceback
 from loginModal import ModalView
 
-bot = lightbulb.BotApp("MTA2MzU2NjY5MzM0OTIwODE2NQ.G0yMFl.cLUQFFQ09Zpy_ydziyVZll1rTJ6d714iACJ4lU")
+bot = lightbulb.BotApp("")
 miru.install(bot)
 
 @bot.listen(hikari.StartedEvent)
