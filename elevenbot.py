@@ -9,21 +9,18 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
-@lightbulb.option("use_stream", "Whether or not to use the audio stream method, which might be faster, but could break at any time.", required=True, type=bool)
 @lightbulb.option("text", "The text to synthesize.")
-@lightbulb.command("favorite-synthesize", "Synthesize using favorite voice ID.")
+@lightbulb.command("synthesize", "Synthesize using saved voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def favsynthesizecmd(ctx: lightbulb.context.Context):
-    if not os.path.exists(f"{ctx.user.id}-favorite.txt"):
-        await ctx.respond("No favorite detected! Set a favorite up first.")
+    if not os.path.exists(f"{ctx.user.id}-id.txt"):
+        await ctx.respond("No ID detected! Set up an ID up first.")
         return
     elif not os.path.exists(f"{ctx.user.id}.txt"):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
-        await ctx.respond("WARNING: This command will be renamed to 'synthesize' in a future update to ElevenBot!")
-        time.sleep(3)
-        with open(f"{ctx.user.id}-favorite.txt", 'r') as favid:
+        with open(f"{ctx.user.id}-id.txt", 'r') as favid:
             if ctx.options.use_stream == True:
                 site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read() + '/stream'
             else:
@@ -73,30 +70,30 @@ async def logoutcmd(ctx: lightbulb.context.Context):
         await ctx.edit_last_response("Key deleted! ✅")
 
 @bot.command
-@lightbulb.option("voice_id", "The voice ID you want to add to the favorites.")
-@lightbulb.command("set-favorite", "Set a voice ID to favorites. Run '/favorite-synthesize' to use your favorite voice ID.")
+@lightbulb.option("voice_id", "The voice ID you want to set.")
+@lightbulb.command("set-id", "Set a voice ID to favorites. Run '/synthesize' to use your favorite voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def favcmd(ctx: lightbulb.context.Context):
-    if os.path.exists(f"{ctx.user.id}-favorite.txt"):
-        await ctx.respond("You can only save one voice ID per favorite! To remove a favorite, run '/remove-favorite'.")
+    if os.path.exists(f"{ctx.user.id}-id.txt"):
+        await ctx.respond("You can only save one voice ID per favorite! To remove a favorite, run '/remove-id'.")
         return
     else:
-        with open(f"{ctx.user.id}-favorite.txt", 'w') as favwrite:
+        with open(f"{ctx.user.id}-id.txt", 'w') as favwrite:
             favwrite.write(ctx.options.voice_id)
             favwrite.close()
-        await ctx.respond("Favorite voice ID set! Now, you can use the '/favorite-synthesize' command to synthesize without needing to provide a voice ID!")
+        await ctx.respond("Voice ID set! Now, you can use the '/synthesize' command to synthesize without needing to provide a voice ID!")
         return
 
 @bot.command
-@lightbulb.command("remove-favorite", "Removes the voice ID from your favorites.")
+@lightbulb.command("remove-id", "Removes the voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def removefavcmd(ctx: lightbulb.context.Context):
-    if not os.path.exists(f"{ctx.user.id}-favorite.txt"):
-        await ctx.respond("You do not have a favorite voice ID set!")
+    if not os.path.exists(f"{ctx.user.id}-id.txt"):
+        await ctx.respond("You do not have a voice ID set!")
         return
     else:
-        os.remove(f"{ctx.user.id}-favorite.txt")
-        await ctx.respond("Favorite list removed! ✅")
+        os.remove(f"{ctx.user.id}-id.txt")
+        await ctx.respond("ID list removed! ✅")
         return    
 
 @bot.command
