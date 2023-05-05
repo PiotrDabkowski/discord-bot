@@ -21,8 +21,11 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
         return
     else:
         with open(f"{ctx.user.id}-id.txt", 'r') as favid:
+            #TODO: remove this since option doesn't exist anymore. 
             if ctx.options.use_stream == True:
                 site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read() + '/stream'
+            #end of TODO
+
             else:
                 site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
             favid.close()
