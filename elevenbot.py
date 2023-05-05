@@ -20,14 +20,8 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
-        with open(f"{ctx.user.id}-id.txt", 'r') as favid:
-            #TODO: remove this since option doesn't exist anymore. 
-            if ctx.options.use_stream == True:
-                site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read() + '/stream'
-            #end of TODO
-
-            else:
-                site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
+        with open(f"{ctx.user.id}-id.txt", 'r') as favid:        
+            site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
             favid.close()
         with open(f"{ctx.user.id}.txt", 'r') as outfile:
             headers = {
