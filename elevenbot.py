@@ -9,10 +9,11 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
+@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1"], default="eleven_monolingual_v1")
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("synthesize", "Synthesize using saved voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def favsynthesizecmd(ctx: lightbulb.context.Context):
+async def synthesizecmd(ctx: lightbulb.context.Context):
     if not os.path.exists(f"{ctx.user.id}-id.txt"):
         await ctx.respond("No ID detected! Set up an ID up first.")
         return
@@ -20,7 +21,7 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
         await ctx.respond("You are not logged in! Please run '/login' to continue.")
         return
     else:
-        with open(f"{ctx.user.id}-id.txt", 'r') as favid:        
+        with open(f"{ctx.user.id}-id.txt", 'r') as favid:
             site = "https://api.elevenlabs.io/v1/text-to-speech/" + favid.read()
             favid.close()
         with open(f"{ctx.user.id}.txt", 'r') as outfile:
@@ -29,12 +30,16 @@ async def favsynthesizecmd(ctx: lightbulb.context.Context):
             'xi-api-key': outfile.read(),
             'Content-Type': 'application/json'
             }
+        data = {
+            "text": f"{ctx.options.text}",
+            "model_id": ctx.options.model_type
+        }
         if len(ctx.options.text) >= 1000:
             await ctx.respond("Text is more than 1000 characters! Please try a shorter sentence.")
             return
         else:
             await ctx.respond("Sending request... ⏰")
-            r = requests.post(site, json={"text": f"{ctx.options.text}"}, headers=headers)
+            r = requests.post(site, json=data, headers=headers)
             if r.ok != True:
                 await ctx.edit_last_response(f"ERROR: Error traceback:\n\n{traceback.format_exc()}")
                 return
