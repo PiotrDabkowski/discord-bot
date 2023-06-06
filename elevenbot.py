@@ -151,6 +151,11 @@ async def addvoicecmd(ctx: lightbulb.context.Context):
         await ctx.respond("Key not found! Please run '/login' first!")
         return
     else:
+        for file in glob.glob("*.mp3"):
+            if os.path.exists(file):             
+                os.remove(file)
+            elif os.path.exists("voice.mp3"):
+                os.remove("voice.mp3")
         view = AddVoiceModalView()
         message = await ctx.respond("Click the button below to start adding a voice!\n\n**Please note, this command is in beta, and as such may be removed or kept in a future update.**", components=view)
         await view.start(message)
