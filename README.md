@@ -4,7 +4,7 @@
 
 To use the code for your own bot, add your bots token in line 4. You also must be on the "Starter" plan or above to use custom voices. You can still use the bot on the "Free" plan, but only the premade voices.
 
-~~Multilingual model support will come in a future update to the bot. **Multilingual models are already supported with the bot, just set the voice ID of the model in question. If it doesnt work, let me know.**~~  They arent supported yet, but after this next update (which brings a new beta command), they should work with the bot.
+~~Multilingual model support will come in a future update to the bot.~~ **Multilingual models are now supported.**
 
 ## This bot will require you to input your API key to login and it will be saved. This will never be used for malicious purpose however. 
 
