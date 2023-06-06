@@ -1,5 +1,6 @@
 import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio, datetime, traceback
 from loginModal import ModalView
+from addVoiceModal import AddVoiceModalView
 
 bot = lightbulb.BotApp("")
 miru.install(bot)
@@ -142,6 +143,18 @@ async def voicelistcmd(ctx: lightbulb.context.Context):
         await ctx.respond(f)
         os.remove("voices.json")
 
+@bot.command
+@lightbulb.command("beta-addvoice", "This is a beta command. Adds a voice to your profile.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def addvoicecmd(ctx: lightbulb.context.Context):
+    if not os.path.exists(f"{ctx.user.id}.txt"):
+        await ctx.respond("Key not found! Please run '/login' first!")
+        return
+    else:
+        view = AddVoiceModalView()
+        message = await ctx.respond("Click the button below to start adding a voice!\n\n**Please note, this command is in beta, and as such may be removed or kept in a future update.**", components=view)
+        await view.start(message)
+        
 @bot.command
 @lightbulb.command("login", "Login using your API key.")
 @lightbulb.implements(lightbulb.SlashCommand)
