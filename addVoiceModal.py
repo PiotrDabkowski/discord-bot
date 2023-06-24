@@ -2,7 +2,7 @@ import miru, hikari, yt_dlp, os, glob, traceback, requests
 
 class AddVoiceModal(miru.Modal):
     name = miru.TextInput(label="Name of voice.", placeholder="Enter the name of the voice you want here!", style=hikari.TextInputStyle.SHORT, required=True, max_length=25)
-    labels = miru.TextInput(label="Labels you want to associate with the voice.", placeholder="Enter the labels here, or leave alone for default labels.", style=hikari.TextInputStyle.SHORT, required=True, max_length=30, value='{"accent": "American"}')
+    labels = miru.TextInput(label="Labels you want to associate with the voice. Leave alone for default labels.", placeholder=None, style=hikari.TextInputStyle.SHORT, required=True, max_length=30, value='{"accent": "American"}')
     description = miru.TextInput(label="Description of your voice.", placeholder="Enter a description you want for your voice here! This is not required however.", style=hikari.TextInputStyle.PARAGRAPH, required=False, max_length=2000)
     link_to_voice = miru.TextInput(label="YouTube link for your voice.", placeholder="Paste your youtube link for your voice here!", style=hikari.TextInputStyle.SHORT, required=True, max_length=500)
     async def callback(self, ctx: miru.ModalContext) -> None:
