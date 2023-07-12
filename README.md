@@ -6,11 +6,12 @@ To use the code for your own bot, add your bots token in line 4. You also must b
 
 # Bugs
 
+# THERE IS A MAJOR BUG THAT IS PREVENTING ALL OR MOST PEOPLE TO SYNTHESIZE AUDIO! CHECK HERE FOR MORE INFO: [Quota reached major bug](https://github.com/elevenlabs/discord-bot/issues/4)
+
 There might some bugs, but the most known ones are:
-1. Request will fail and send a less than normal audio file that is 0 seconds long. (**This has been mostly fixed**)
-2. The beta command (add-voice) might break if the video is too long. (**This has an error message backup if it does fail**)
-3. Sometimes, upon setting an ID and using the synthesize command and selecting the wrong model, the bot will error out. (**Still needs to test if this happens**)
-4. If the bot responds with "NoneType: None", that would mean your voice is incompatible with your current plan. (**Should be fixed now.**)
+1. The beta command (add-voice) might break if the video is too long. (**This has an error message backup if it does fail**)
+2. Sometimes, upon setting an ID and using the synthesize command and selecting the wrong model, the bot will error out. (**Still needs to test if this happens**)
+3. If the bot responds with "NoneType: None", that would mean your voice is incompatible with your current plan. (**Should be fixed now.**)
 
 If there are any other bugs that I don't know about, either make an issue in this repo or DM me on Discord.
 
