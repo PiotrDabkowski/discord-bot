@@ -6,7 +6,7 @@ To use the code for your own bot, add your bots token in line 4. You also must b
 
 # Bugs
 
-# THERE IS A MAJOR BUG THAT IS PREVENTING ALL OR MOST PEOPLE TO SYNTHESIZE AUDIO! CHECK HERE FOR MORE INFO: [Quota reached major bug](https://github.com/elevenlabs/discord-bot/issues/4)
+# THERE IS A MAJOR BUG THAT IS PREVENTING ALL OR MOST PEOPLE TO SYNTHESIZE AUDIO! CHECK HERE FOR MORE INFO: [Free tier reached major bug](https://github.com/elevenlabs/discord-bot/issues/4)
 
 There might some bugs, but the most known ones are:
 1. The beta command (add-voice) might break if the video is too long. (**This has an error message backup if it does fail**)
