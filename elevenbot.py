@@ -42,7 +42,7 @@ async def synthesizecmd(ctx: lightbulb.context.Context):
             await ctx.respond("Sending request... ⏰")
             r = requests.post(site, json=data, headers=headers)
             if r.ok != True:
-                await ctx.edit_last_response(f"ERROR: Error traceback:\n\n{traceback.format_exc()}")
+                await ctx.edit_last_response(f"ERROR: Error traceback:\n\n{r.json()}")
                 return
             else:
                 await ctx.edit_last_response("Checking if voice ID is valid... ⏰")
