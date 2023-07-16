@@ -4,11 +4,11 @@
 
 To use the code for your own bot, add your bots token in line 4. You also must be on the "Starter" plan or above to use custom voices. You can still use the bot on the "Free" plan, but only the premade voices.
 
-## Due to a server reset, you will be required to input your API key again.
+# *Due to a server reset, you will be required to input your API key again.*
 
 # Bugs
 
-# THERE IS A MAJOR BUG THAT IS PREVENTING ALL OR MOST PEOPLE TO SYNTHESIZE AUDIO! CHECK HERE FOR MORE INFO: [Free Tier usage disabled major bug.](https://github.com/elevenlabs/discord-bot/issues/4)
+# CHECK HERE FOR MORE INFO: [Free Tier usage disabled major bug.](https://github.com/elevenlabs/discord-bot/issues/4)
 
 There might some bugs, but the most known ones are:
 1. The beta command (add-voice) might break if the video is too long. (**This has an error message backup if it does fail**)
