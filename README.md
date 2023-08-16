@@ -1,5 +1,7 @@
 # ElevenBot
 
+# (For the beta branch, [go here](https://github.com/PiotrDabkowski/discord-bot/tree/beta-tests))
+
 ### This bot interacts with ElevenLabs API.
 
 To use the code for your own bot, add your bots token in line 4. You also must be on the "Starter" plan or above to use custom voices. You can still use the bot on the "Free" plan, but only the premade voices.
