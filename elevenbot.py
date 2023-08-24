@@ -14,7 +14,7 @@ async def on_ready(event):
 
 @bot.command
 @lightbulb.option("audio_fx", "Adds audio effect. Defaults to none.", required=False, choices=["none", "reverb", "chorus"], default="none")
-@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1"], default="eleven_monolingual_v1")
+@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1", "eleven_english_v2", "eleven_multilingual_v2"], default="eleven_monolingual_v1")
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("synthesize", "Synthesize using saved voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
