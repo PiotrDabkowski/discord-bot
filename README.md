@@ -4,6 +4,6 @@
 
 ### Future additions:
 1. Add audio effect (Reverb, chorus, etc) support. **(Added successfully.)**
-2. Implement the v2 english and multilingual models. **(Working on now.)**
+2. Implement the v2 english and multilingual models. **(Implemented.)**
 
 ## If there are any changes in here you would like me to add, DM me with what you want and I'll add it in here.
