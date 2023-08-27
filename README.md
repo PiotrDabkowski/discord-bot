@@ -17,7 +17,7 @@ There might some bugs, but the most known ones are:
 If there are any other bugs that I don't know about, either make an issue in this repo or DM me on Discord.
 
 ---
-**Multilingual models (both v1 and v2) are now supported.**
+**Multilingual models (only v1 because it doesnt work with Requests) are now supported.**
 
 ## This bot will require you to input your API key to login and it will be saved. This will never be used for malicious purpose however. 
 
