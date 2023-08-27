@@ -13,8 +13,7 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
-@lightbulb.option("audio_fx", "Adds audio effect. Defaults to none.", required=False, choices=["none", "reverb", "chorus"], default="none")
-@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1", "eleven_english_v2", "eleven_multilingual_v2"], default="eleven_monolingual_v1")
+@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1"], default="eleven_monolingual_v1")
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("synthesize", "Synthesize using saved voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -56,48 +55,12 @@ async def synthesizecmd(ctx: lightbulb.context.Context):
                 else:
                     await ctx.edit_last_response("Voice ID is valid! ✅")
                     if ctx.options.audio_fx == "none":
-                        await ctx.respond(f"Done ✅! Sending audio file with no audio effect...\nYou have used {len(ctx.options.text)} characters.")
+                        await ctx.respond(f"Done ✅! Sending audio file...\nYou have used {len(ctx.options.text)} characters.")
                         audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
                         with open(audiofilename, 'wb') as out:
                             out.write(r.content)
                         f = hikari.File(audiofilename)
                         await ctx.respond(f)
-                        os.remove(audiofilename)
-                        return
-                    elif ctx.options.audio_fx == "reverb":
-                        audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                        await ctx.respond(f"Done ✅! Sending audio file with reverb effect...\nYou have used {len(ctx.options.text)} characters.")
-                        with open(audiofilename, 'wb') as out:
-                            out.write(r.content)
-                        board = Pedalboard([Reverb(room_size=0.5)])
-                        outputwithreverb = "reverb-" + audiofilename
-                        with AudioFile(audiofilename) as afread:
-                            with AudioFile(outputwithreverb, 'w', afread.samplerate, afread.num_channels) as reverbaudio:
-                                while afread.tell() < afread.frames:
-                                    chunk = afread.read(afread.samplerate)
-                                    effected = board(chunk, afread.samplerate, reset=False)
-                                    reverbaudio.write(effected)
-                        f2 = hikari.File(outputwithreverb)
-                        await ctx.respond(f2)
-                        os.remove(outputwithreverb)
-                        os.remove(audiofilename)
-                        return
-                    elif ctx.options.audio_fx == "chorus":
-                        await ctx.respond(f"Done ✅! Sending audio file with chorus effect...\nYou have used {len(ctx.options.text)} characters.")
-                        audiofilename = "audio-" + str(random.randint(1, 372855)) + ".mp3"
-                        with open(audiofilename, 'wb') as out:
-                            out.write(r.content)
-                        board = Pedalboard([Chorus()])
-                        outputwithchorus = "chorus-" + audiofilename
-                        with AudioFile(audiofilename) as afread2:
-                            with AudioFile(outputwithchorus, 'w', afread2.samplerate, afread2.num_channels) as chorusaudio:
-                                while afread2.tell() < afread2.frames:
-                                    chunk = afread2.read(afread2.samplerate)
-                                    effected = board(chunk, afread2.samplerate, reset=False)
-                                    chorusaudio.write(effected)
-                        f3 = hikari.File(outputwithchorus)
-                        await ctx.respond(f3)
-                        os.remove(outputwithchorus)
                         os.remove(audiofilename)
                         return
                         
