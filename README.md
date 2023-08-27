@@ -6,8 +6,6 @@
 
 To use the code for your own bot, add your bots token in line 4. You also must be on the "Starter" plan or above to use custom voices. You can still use the bot on the "Free" plan, but only the premade voices. 
 
-## **To use audio fx with the output audio, run '/synthesize [text]', then press [TAB] and select "audio_fx" and choose either chorus or reverb. More effects will come.**
-
 # Bugs
 
 # [Free Tier usage disabled major bug.](https://github.com/elevenlabs/discord-bot/issues/4)
