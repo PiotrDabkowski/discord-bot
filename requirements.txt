@@ -2,5 +2,5 @@ hikari==2.0.0.dev121
 hikari-lightbulb==2.3.3
 requests==2.31.0
 hikari-miru==3.2.1
-yt-dlp==2023.7.6
+yt-dlp==2023.9.24
 certifi
