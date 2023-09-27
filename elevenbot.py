@@ -1,7 +1,5 @@
 import hikari, lightbulb, requests, random, os, time, json as j, miru, asyncio, datetime, traceback, urllib3
 urllib3.disable_warnings()
-from pedalboard import *
-from pedalboard.io import AudioFile
 from loginModal import ModalView
 from addVoiceModal import AddVoiceModalView
 
@@ -13,7 +11,7 @@ async def on_ready(event):
     print("Ready!")
 
 @bot.command
-@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1"], default="eleven_monolingual_v1")
+@lightbulb.option("model_type", "Type of model to use. Defaults to eleven_monolingual_v1.", required=False, choices=["eleven_monolingual_v1", "eleven_multilingual_v1", "eleven_multilingual_v2", "eleven_english_v2"], default="eleven_monolingual_v1")
 @lightbulb.option("text", "The text to synthesize.")
 @lightbulb.command("synthesize", "Synthesize using saved voice ID.")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -90,6 +88,32 @@ async def favcmd(ctx: lightbulb.context.Context):
             favwrite.close()
         await ctx.respond("Voice ID set! Now, you can use the '/synthesize' command to synthesize without needing to provide a voice ID!")
         return
+
+@bot.command
+@lightbulb.command("support", "Support the bot.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def supportcmd(ctx: lightbulb.context.Context):
+    menu = miru.View()
+    menu.add_item(miru.Button(label="Ko-fi", url="https://ko-fi.com/acmesupplier"))
+    btnmsg = (await ctx.respond("If you want to support the bot and get access to a premium bot with some future perks (faster inference time, etc), click one of the links below!\n\nEverything is still free and will be free, this is just if you want to support the bot's development.", components=menu.build())).message()
+    await menu.start(await btnmsg)
+
+@bot.command
+@lightbulb.command("commands", "Lists all available commands.")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def allcmds(ctx: lightbulb.context.Context):
+    embed = hikari.Embed(title="Commands", description="See below for all my commands!")
+    embed.add_field("/support", "Support the bot, and get access to a premium bot with more features.")
+    embed.add_field("/commands", "This menu.")
+    embed.add_field("/login", "Run this command to login to your elevenlabs profile.")
+    embed.add_field("/logout", "Logout of your profile.")
+    embed.add_field("/synthesize [text] [model_type]", "Synthesize audio using the given text and model type.")
+    embed.add_field("/set-id [voice_id]", "Set up a voice ID.")
+    embed.add_field("/remove-id", "Removes the saved ID.")
+    embed.add_field("/voices", "Shows the voices you have on your account.")
+    embed.add_field("/userinfo", "Shows your profile info.")
+    embed.add_field("/addvoice", "Creates a voice and adds it to your profile.")
+    await ctx.respond(embed=embed)
 
 @bot.command
 @lightbulb.command("remove-id", "Removes the voice ID.")
