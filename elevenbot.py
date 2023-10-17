@@ -95,7 +95,7 @@ async def favcmd(ctx: lightbulb.context.Context):
 async def supportcmd(ctx: lightbulb.context.Context):
     menu = miru.View()
     menu.add_item(miru.Button(label="Ko-fi", url="https://ko-fi.com/acmesupplier"))
-    btnmsg = (await ctx.respond("If you want to support the bot and get access to a premium bot with some future perks (faster inference time, etc), click one of the links below!\n\nEverything is still free and will be free, this is just if you want to support the bot's development.", components=menu.build())).message()
+    btnmsg = (await ctx.respond("If you want to support the bots development, click one of the links below!\n\nEverything is still free and will be free.", components=menu.build())).message()
     await menu.start(await btnmsg)
 
 @bot.command
