@@ -1,6 +1,6 @@
 hikari==2.0.0.dev122
 hikari-lightbulb==2.3.3
 requests==2.31.0
-hikari-miru==3.2.2
+hikari-miru==3.3.0
 yt-dlp==2023.11.16
 certifi
