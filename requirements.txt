@@ -1,5 +1,5 @@
 hikari==2.0.0.dev122
-hikari-lightbulb==2.3.3
+hikari-lightbulb==2.3.4
 requests==2.31.0
 hikari-miru==3.3.1
 yt-dlp==2023.11.16
