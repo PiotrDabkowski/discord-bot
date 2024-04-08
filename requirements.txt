@@ -1,4 +1,4 @@
-hikari==2.0.0.dev123
+hikari==2.0.0.dev124
 hikari-lightbulb==2.3.5
 requests==2.31.0
 hikari-miru==3.4.0
