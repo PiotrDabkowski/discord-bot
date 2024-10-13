@@ -2,9 +2,6 @@
 
 # (For the beta branch, [go here](https://github.com/PiotrDabkowski/discord-bot/tree/beta-tests))
 
-> [!IMPORTANT]
-> Due to Discord's API messing up the bot entirely, I have no choice but to shut it down until I can afford an actual server that can host it 24/7. The source code is not being updated anymore, so anything here could've been changed or altered.
-
 ### This bot interacts with ElevenLabs API.
 
 To use the code for your own bot, add your bots token in line 4. You also must be on the "Starter" plan or above to use custom voices. You can still use the bot on the "Free" plan, but only the premade voices. 
