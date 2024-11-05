@@ -1,5 +1,8 @@
 # ElevenBot
 
+> [!IMPORTANT]
+> As of November 5th, the bot has been shut down. Source code is available.
+
 # (For the beta branch, [go here](https://github.com/PiotrDabkowski/discord-bot/tree/beta-tests))
 
 ### This bot interacts with ElevenLabs API.
